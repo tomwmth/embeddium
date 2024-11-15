@@ -8,7 +8,6 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import com.mojang.math.Matrix4f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
@@ -17,8 +16,10 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraftforge.client.event.CustomizeGuiOverlayEvent;
 import net.minecraftforge.client.gui.overlay.ForgeGui;
+import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -29,7 +30,7 @@ import java.util.List;
 
 @Mixin(ForgeGui.class)
 public abstract class ForgeGuiMixin extends Gui {
-    @Shadow
+    @Shadow(remap = false)
     private Font font;
 
     public ForgeGuiMixin(Minecraft p_232355_, ItemRenderer p_232356_) {
@@ -50,11 +51,13 @@ public abstract class ForgeGuiMixin extends Gui {
         minecraft.getProfiler().pop();
     }
 
+    @Unique
     private void renderForgeList(PoseStack matrixStack, List<String> list, boolean right) {
         renderBackdrop(matrixStack, list, right);
         renderStrings(matrixStack, list, right);
     }
 
+    @Unique
     private void renderStrings(PoseStack matrixStack, List<String> list, boolean right) {
         MultiBufferSource.BufferSource immediate = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
 
@@ -72,16 +75,16 @@ public abstract class ForgeGuiMixin extends Gui {
                 float y1 = 2 + (height * i);
 
                 this.font.drawInBatch(string, x1, y1, 0xe0e0e0, false, positionMatrix, immediate,
-                        false, 0, 15728880, this.font.isBidirectional());
+                        Font.DisplayMode.NORMAL, 0, 15728880, this.font.isBidirectional());
             }
         }
 
         immediate.endBatch();
     }
 
+    @Unique
     private void renderBackdrop(PoseStack matrixStack, List<String> list, boolean right) {
         RenderSystem.enableBlend();
-        RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
 
         int color = 0x90505050;
@@ -126,7 +129,6 @@ public abstract class ForgeGuiMixin extends Gui {
         BufferBuilder.RenderedBuffer output = bufferBuilder.end();
 
         BufferUploader.drawWithShader(output);
-        RenderSystem.enableTexture();
         RenderSystem.disableBlend();
     }
 }

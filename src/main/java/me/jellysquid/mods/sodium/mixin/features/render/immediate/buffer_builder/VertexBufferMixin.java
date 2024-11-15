@@ -3,17 +3,22 @@ package me.jellysquid.mods.sodium.mixin.features.render.immediate.buffer_builder
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexBuffer;
-import com.mojang.math.Matrix4f;
 import net.minecraft.client.renderer.ShaderInstance;
+import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
 // High priority so replacement happens before other mods increase the sampler count, so that we see the updated value
 @Mixin(value = VertexBuffer.class, priority = 500)
 public class VertexBufferMixin {
+    @Unique
     private static final int DEFAULT_NUM_SAMPLERS = 12;
+
+    @Unique
     private static String[] SAMPLER_IDS = embeddium$makeSamplerIds(DEFAULT_NUM_SAMPLERS);
 
+    @Unique
     private static String[] embeddium$makeSamplerIds(int len) {
         String[] samplerIds = new String[len];
         for(int i = 0; i < len; i++) {

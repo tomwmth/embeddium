@@ -1,13 +1,12 @@
 package me.jellysquid.mods.sodium.mixin.features.render.gui.font;
 
-import com.mojang.math.Matrix4f;
+import net.caffeinemc.mods.sodium.api.math.MatrixHelper;
 import net.caffeinemc.mods.sodium.api.vertex.format.common.GlyphVertex;
 import net.minecraft.client.gui.font.glyphs.BakedGlyph;
 import net.caffeinemc.mods.sodium.api.vertex.buffer.VertexBufferWriter;
 import net.caffeinemc.mods.sodium.api.util.ColorABGR;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.caffeinemc.mods.sodium.api.math.MatrixHelper;
-import org.embeddedt.embeddium.api.math.Matrix4fExtended;
+import org.joml.Matrix4f;
 import org.lwjgl.system.MemoryStack;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
@@ -59,6 +58,7 @@ public class GlyphRendererMixin {
         }
     }
 
+    @Unique
     private boolean drawFast(boolean italic, float x, float y, Matrix4f matrix, VertexConsumer vertexConsumer, float red, float green, float blue, float alpha, int light) {
         var writer = VertexBufferWriter.tryOf(vertexConsumer);
 
@@ -101,11 +101,10 @@ public class GlyphRendererMixin {
     @Unique
     private static void write(long buffer,
                               Matrix4f matrix, float x, float y, float z, int color, float u, float v, int light) {
-        float x2 = ((Matrix4fExtended)(Object)matrix).transformVecX(x, y, z);
-        float y2 = ((Matrix4fExtended)(Object)matrix).transformVecY(x, y, z);
-        float z2 = ((Matrix4fExtended)(Object)matrix).transformVecZ(x, y, z);
+        float x2 = MatrixHelper.transformPositionX(matrix, x, y, z);
+        float y2 = MatrixHelper.transformPositionY(matrix, x, y, z);
+        float z2 = MatrixHelper.transformPositionZ(matrix, x, y, z);
 
         GlyphVertex.put(buffer, x2, y2, z2, color, u, v, light);
     }
-
 }

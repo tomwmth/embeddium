@@ -1,5 +1,6 @@
 package me.jellysquid.mods.sodium.mixin.features.render.entity.shadows;
 
+import net.caffeinemc.mods.sodium.api.math.MatrixHelper;
 import net.caffeinemc.mods.sodium.api.vertex.buffer.VertexBufferWriter;
 import net.caffeinemc.mods.sodium.api.vertex.format.common.ModelVertex;
 import net.minecraft.client.renderer.LightTexture;
@@ -10,18 +11,14 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.caffeinemc.mods.sodium.api.util.ColorABGR;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.caffeinemc.mods.sodium.api.math.MatrixHelper;
-import org.embeddedt.embeddium.api.math.Matrix3fExtended;
-import org.embeddedt.embeddium.api.math.Matrix4fExtended;
+import org.joml.Matrix4f;
 import org.lwjgl.system.MemoryStack;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -105,10 +102,10 @@ public class EntityRenderDispatcherMixin {
         float v2 = (-maxZ * size) + 0.5F;
 
         var matNormal = matrices.normal();
-        var matPosition = Matrix4fExtended.get(matrices.pose());
+        var matPosition = matrices.pose();
 
         var color = ColorABGR.withAlpha(SHADOW_COLOR, alpha);
-        var normal = Matrix3fExtended.get(matNormal).computeNormal(Direction.UP);
+        var normal = MatrixHelper.transformNormal(matNormal, Direction.UP);
 
         try (MemoryStack stack = MemoryStack.stackPush()) {
             long buffer = stack.nmalloc(4 * ModelVertex.STRIDE);
@@ -132,11 +129,11 @@ public class EntityRenderDispatcherMixin {
     }
 
     @Unique
-    private static void writeShadowVertex(long ptr, Matrix4fExtended matPosition, float x, float y, float z, float u, float v, int color, int normal) {
+    private static void writeShadowVertex(long ptr, Matrix4f matPosition, float x, float y, float z, float u, float v, int color, int normal) {
         // The transformed position vector
-        float xt = matPosition.transformVecX(x, y, z);
-        float yt = matPosition.transformVecY(x, y, z);
-        float zt = matPosition.transformVecZ(x, y, z);
+        float xt = MatrixHelper.transformPositionX(matPosition, x, y, z);
+        float yt = MatrixHelper.transformPositionY(matPosition, x, y, z);
+        float zt = MatrixHelper.transformPositionZ(matPosition, x, y, z);
 
         ModelVertex.write(ptr, xt, yt, zt, color, u, v, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, normal);
     }

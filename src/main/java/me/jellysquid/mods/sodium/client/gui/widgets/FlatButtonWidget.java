@@ -1,17 +1,15 @@
 package me.jellysquid.mods.sodium.client.gui.widgets;
 
-import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 import me.jellysquid.mods.sodium.client.util.Dim2i;
-import net.minecraft.client.gui.components.Widget;
+import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.network.chat.Component;
 import org.embeddedt.embeddium.gui.theme.DefaultColors;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-public class FlatButtonWidget extends AbstractWidget implements Widget {
+public class FlatButtonWidget extends AbstractWidget implements Renderable {
     protected final Dim2i dim;
     private final Runnable action;
 

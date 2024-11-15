@@ -222,7 +222,7 @@ public class SodiumGameOptionPages {
                         .setName(Component.translatable("options.ao"))
                         .setTooltip(Component.translatable("sodium.options.smooth_lighting.tooltip"))
                         .setControl(TickBoxControl::new)
-                        .setBinding((opts, value) -> opts.ambientOcclusion().set(value ? AmbientOcclusionStatus.MAX : AmbientOcclusionStatus.OFF), opts -> opts.ambientOcclusion().get() != AmbientOcclusionStatus.OFF)
+                        .setBinding((opts, value) -> opts.ambientOcclusion().set(value), opts -> opts.ambientOcclusion().get())
                         .setImpact(OptionImpact.LOW)
                         .setFlags(OptionFlag.REQUIRES_RENDERER_RELOAD)
                         .build())

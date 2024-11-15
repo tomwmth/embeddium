@@ -2,10 +2,7 @@ package org.embeddedt.embeddium.render.chunk.light;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Matrix3f;
-import com.mojang.math.Matrix4f;
 import me.jellysquid.mods.sodium.client.model.light.LightPipeline;
-import me.jellysquid.mods.sodium.client.model.light.data.ArrayLightDataCache;
 import me.jellysquid.mods.sodium.client.model.light.data.LightDataAccess;
 import me.jellysquid.mods.sodium.client.model.light.data.QuadLightData;
 import me.jellysquid.mods.sodium.client.model.quad.ModelQuadView;
@@ -20,6 +17,8 @@ import net.minecraftforge.client.model.lighting.FlatQuadLighter;
 import net.minecraftforge.client.model.lighting.QuadLighter;
 import net.minecraftforge.client.model.lighting.SmoothQuadLighter;
 import net.minecraftforge.client.textures.UnitTextureAtlasSprite;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
 
 /**
  * Implements an Embeddium-compatible frontend for the Forge light pipeline.

@@ -5,7 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.components.Widget;
+import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.narration.NarratedElementType;
@@ -15,7 +15,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.sounds.SoundEvents;
 
-public abstract class AbstractWidget implements Widget, GuiEventListener, NarratableEntry {
+public abstract class AbstractWidget implements Renderable, GuiEventListener, NarratableEntry {
     protected final Font font;
     protected boolean focused;
     protected boolean hovered;
@@ -49,6 +49,7 @@ public abstract class AbstractWidget implements Widget, GuiEventListener, Narrat
         return this.font.width(text);
     }
 
+    @Override
     public NarratableEntry.NarrationPriority narrationPriority() {
         if (this.focused) {
             return NarratableEntry.NarrationPriority.FOCUSED;
@@ -68,10 +69,12 @@ public abstract class AbstractWidget implements Widget, GuiEventListener, Narrat
         }
     }
 
+    @Override
     public boolean isFocused() {
         return this.focused;
     }
 
+    @Override
     public void setFocused(boolean focused) {
         this.focused = focused;
     }

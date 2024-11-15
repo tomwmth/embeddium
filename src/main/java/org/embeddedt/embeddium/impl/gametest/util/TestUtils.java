@@ -15,7 +15,6 @@ import org.embeddedt.embeddium.impl.gametest.network.SyncS2CPacket;
 import org.slf4j.Logger;
 
 import java.io.File;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.concurrent.*;
@@ -36,7 +35,7 @@ public class TestUtils {
     public static boolean isChunkVisible(Vec3 position) {
         return Minecraft.getInstance().submit(() -> {
             // Verify chunk is rendered
-            BlockPos pos = new BlockPos(position.x, position.y, position.z);
+            BlockPos pos = BlockPos.containing(position.x, position.y, position.z);
             return Minecraft.getInstance().levelRenderer.isChunkCompiled(pos);
         }).join();
     }

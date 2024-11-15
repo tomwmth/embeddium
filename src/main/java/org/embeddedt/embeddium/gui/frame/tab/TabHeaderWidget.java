@@ -12,6 +12,7 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.IoSupplier;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.resource.PathPackResources;
 import net.minecraftforge.resource.ResourcePackLoader;
@@ -46,15 +47,10 @@ public class TabHeaderWidget extends FlatButtonWidget {
                     .orElse(ResourcePackLoader.getPackFor("forge").
                             orElseThrow(()->new RuntimeException("Can't find forge, WHAT!")));
             try {
-                InputStream logoResource = resourcePack.getRootResource(logoFile.get());
+                IoSupplier<InputStream> logoResource = resourcePack.getRootResource(logoFile.get());
                 if (logoResource != null) {
-                    NativeImage logo;
-                    try {
-                        logo = NativeImage.read(logoResource);
-                    } finally {
-                        logoResource.close();
-                    }
-                    if(logo.getWidth() != logo.getHeight()) {
+                    NativeImage logo = NativeImage.read(logoResource.get());
+                    if (logo.getWidth() != logo.getHeight()) {
                         logo.close();
                         throw new IOException("Logo " + logoFile.get() + " for " + modId + " is not square");
                     }

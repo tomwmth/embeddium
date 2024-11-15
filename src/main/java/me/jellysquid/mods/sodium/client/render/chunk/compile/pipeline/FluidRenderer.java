@@ -20,12 +20,10 @@ import me.jellysquid.mods.sodium.client.render.chunk.terrain.material.Material;
 import me.jellysquid.mods.sodium.client.render.chunk.vertex.format.ChunkVertexEncoder;
 import me.jellysquid.mods.sodium.client.world.WorldSlice;
 import me.jellysquid.mods.sodium.client.util.DirectionUtil;
-import net.caffeinemc.mods.sodium.api.util.ColorMixer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.Block;
@@ -284,8 +282,8 @@ public class FluidRenderer {
 
             float uAvg = (u1 + u2 + u3 + u4) / 4.0F;
             float vAvg = (v1 + v2 + v3 + v4) / 4.0F;
-            float s1 = (float) sprites[0].getWidth() / (sprites[0].getU1() - sprites[0].getU0());
-            float s2 = (float) sprites[0].getHeight() / (sprites[0].getV1() - sprites[0].getV0());
+            float s1 = (float) sprites[0].contents().width() / (sprites[0].getU1() - sprites[0].getU0());
+            float s2 = (float) sprites[0].contents().height() / (sprites[0].getV1() - sprites[0].getV0());
             float s3 = 4.0F / Math.max(s2, s1);
 
             u1 = Mth.lerp(s3, u1, uAvg);

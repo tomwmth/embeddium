@@ -5,14 +5,10 @@ import org.w3c.dom.Element
 
 plugins {
     id("idea")
-    id("net.minecraftforge.gradle") version("6.0.29")
     id("maven-publish")
-    id("org.spongepowered.mixin") version("0.7.38")
-
-    id("me.modmuss50.mod-publish-plugin") version("0.3.4")
-
-    id("org.parchmentmc.librarian.forgegradle") version("1.2.0.7-dev-SNAPSHOT")
-
+    id("net.minecraftforge.gradle") version("6.0.+")
+    id("org.spongepowered.mixin") version("0.7.+")
+    id("org.parchmentmc.librarian.forgegradle") version("1.+")
     id("embeddium-fabric-remapper")
 }
 
@@ -34,9 +30,6 @@ base {
     archivesName = "archives_base_name"()
 }
 
-// Mojang ships Java 17 to end users in 1.18+, so your mod should target Java 17.
-// java.toolchain.languageVersion = JavaLanguageVersion.of(17)
-
 val extraSourceSets = arrayOf("legacy", "compat")
 
 sourceSets {
@@ -57,8 +50,6 @@ repositories {
     mavenCentral()
     maven("https://maven.minecraftforge.net/")
     maven("https://maven.fabricmc.net")
-    maven("https://maven.tterrag.com/")
-    maven("https://maven.blamejared.com")
     maven("https://api.modrinth.com/maven") {
         content {
             includeGroup("maven.modrinth")
@@ -69,7 +60,6 @@ repositories {
             includeGroup("curse.maven")
         }
     }
-    maven("https://maven.covers1624.net/")
 }
 
 jarJar.enable()
@@ -157,9 +147,8 @@ dependencies {
     minecraft("net.minecraftforge:forge:${"minecraft_version"()}-${"forge_version"()}")
 
     // Mods
-    compatCompileOnly(fg.deobf("curse.maven:codechickenlib-242818:${"codechicken_fileid"()}"))
     compatCompileOnly(fg.deobf("curse.maven:immersiveengineering-231951:${"ie_fileid"()}"))
-    compatCompileOnly(fg.deobf("com.brandon3055.brandonscore:BrandonsCore:1.20.1-3.2.1.302:universal"))
+    "runtimeOnlyNonPublishable"(fg.deobf("curse.maven:modernfix-790626:${"mf_fileid"()}"))
 
     // Fabric API
     "fabricCompileOnly"(fAPIModule("fabric-api-base"))
@@ -167,8 +156,6 @@ dependencies {
     "fabricCompileOnly"(fAPIModule("fabric-rendering-data-attachment-v1"))
     "fabricCompileOnly"(fAPIModule("fabric-renderer-indigo"))
     compileOnly("net.fabricmc:fabric-loader:${"fabric_loader_version"()}")
-
-    "runtimeOnlyNonPublishable"(fg.deobf("curse.maven:modernfix-790626:5288170"))
 
     annotationProcessor("net.fabricmc:sponge-mixin:0.12.5+mixin.0.8.5")
 
@@ -181,10 +168,6 @@ dependencies {
     implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.3.5")) {
         jarJar.ranged(this, "[0.3.5,)")
     }
-    implementation(jarJar("org.joml:joml:1.10.5")) {
-        jarJar.ranged(this, "[1.10.5,)")
-    }
-    minecraftLibrary("org.joml:joml:1.10.5")
 
     // runtime remapping at home
     fileTree(extraModsDir) {
@@ -276,43 +259,6 @@ publishing {
     repositories {
         maven("file://${System.getenv("local_maven")}")
     }
-}
-
-publishMods {
-    file = tasks.jarJar.get().archiveFile
-    changelog = "https://github.com/embeddedt/embeddium/wiki/Changelog"
-    type = STABLE
-    modLoaders.add("forge")
-    modLoaders.add("neoforge")
-
-    curseforge {
-        projectId = "908741"
-        accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
-        minecraftVersions.add("minecraft_version"())
-
-        incompatible {
-            slug = "rubidium"
-        }
-
-        incompatible {
-            slug = "textrues-embeddium-options"
-        }
-    }
-    modrinth {
-        projectId = "sk9rgfiA"
-        accessToken = providers.environmentVariable("MODRINTH_TOKEN")
-        minecraftVersions.add("minecraft_version"())
-
-        incompatible {
-            slug = "rubidium"
-        }
-
-        incompatible {
-            slug = "textrues-embeddium-options"
-        }
-    }
-
-    displayName = "[${"minecraft_version"()}] Embeddium ${"mod_version"()}"
 }
 
 fun getModVersion(): String {

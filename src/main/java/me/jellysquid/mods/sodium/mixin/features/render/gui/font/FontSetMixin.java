@@ -9,8 +9,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-import java.util.function.IntFunction;
-
 @Mixin(value = FontSet.class, priority = 500)
 public abstract class FontSetMixin {
     @Shadow
@@ -23,7 +21,7 @@ public abstract class FontSetMixin {
      * @author embeddedt
      * @reason avoid lambda allocation from method reference in vanilla
      */
-    @Redirect(method = "getGlyphInfo", at = @At(value = "INVOKE", target = "Lit/unimi/dsi/fastutil/ints/Int2ObjectMap;computeIfAbsent(ILit/unimi/dsi/fastutil/ints/Int2ObjectFunction;)Ljava/lang/Object;"))
+    @Redirect(method = "getGlyphInfo", at = @At(value = "INVOKE", target = "Lit/unimi/dsi/fastutil/ints/Int2ObjectMap;computeIfAbsent(ILit/unimi/dsi/fastutil/ints/Int2ObjectFunction;)Ljava/lang/Object;", remap = false))
     private Object getGlyphInfoFast(Int2ObjectMap<FontSet.GlyphInfoFilter> instance, int i, Int2ObjectFunction<FontSet.GlyphInfoFilter> methodRef) {
         FontSet.GlyphInfoFilter info = instance.get(i);
 
@@ -39,7 +37,7 @@ public abstract class FontSetMixin {
      * @author embeddedt
      * @reason avoid lambda allocation from method reference in vanilla
      */
-    @Redirect(method = "getGlyph", at = @At(value = "INVOKE", target = "Lit/unimi/dsi/fastutil/ints/Int2ObjectMap;computeIfAbsent(ILit/unimi/dsi/fastutil/ints/Int2ObjectFunction;)Ljava/lang/Object;"))
+    @Redirect(method = "getGlyph", at = @At(value = "INVOKE", target = "Lit/unimi/dsi/fastutil/ints/Int2ObjectMap;computeIfAbsent(ILit/unimi/dsi/fastutil/ints/Int2ObjectFunction;)Ljava/lang/Object;", remap = false))
     private Object getGlyphFast(Int2ObjectMap<BakedGlyph> instance, int i, Int2ObjectFunction<BakedGlyph> methodRef) {
         BakedGlyph glyph = instance.get(i);
 

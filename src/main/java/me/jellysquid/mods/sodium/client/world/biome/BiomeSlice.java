@@ -3,18 +3,15 @@ package me.jellysquid.mods.sodium.client.world.biome;
 import me.jellysquid.mods.sodium.client.world.BiomeSeedProvider;
 import me.jellysquid.mods.sodium.client.world.WorldSlice;
 import me.jellysquid.mods.sodium.client.world.cloned.ChunkRenderContext;
-import me.jellysquid.mods.sodium.client.world.cloned.ClonedChunkSection;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.Holder;
-import net.minecraft.core.Holder.Reference;
 import net.minecraft.core.QuartPos;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.util.LinearCongruentialGenerator;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.Biomes;
-import net.minecraft.world.level.chunk.PalettedContainerRO;
 
 public class BiomeSlice {
     private static final int SIZE = 3 * 4; // 3 chunks * 4 biomes per chunk
@@ -44,7 +41,7 @@ public class BiomeSlice {
 
     private void copyBiomeData(Level world, ChunkRenderContext context) {
         var defaultValue = world.registryAccess()
-                .registryOrThrow(Registry.BIOME_REGISTRY)
+                .registryOrThrow(Registries.BIOME)
                 .getHolderOrThrow(Biomes.PLAINS);
 
         for (int sectionX = 0; sectionX < 3; sectionX++) {

@@ -5,7 +5,6 @@ import me.jellysquid.mods.sodium.client.data.fingerprint.HashedFingerprint;
 import me.jellysquid.mods.sodium.client.gui.SodiumGameOptions;
 import net.minecraftforge.fml.IExtensionPoint;
 import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -32,9 +31,9 @@ public class SodiumClientMod {
 
     private static String MOD_VERSION;
 
-    public SodiumClientMod() {
+    public SodiumClientMod(FMLJavaModLoadingContext context) {
         MOD_VERSION = ModList.get().getModContainerById(MODID).get().getModInfo().getVersion().toString();
-        ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (a, b) -> true));
+        context.registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> NetworkConstants.IGNORESERVERONLY, (a, b) -> true));
 
         if (!FMLLoader.getDist().isClient()) {
             return;
@@ -42,7 +41,7 @@ public class SodiumClientMod {
 
         TaintDetector.init();
 
-        var eventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        var eventBus = context.getModEventBus();
 
         if("true".equals(System.getProperty("embeddium.enableGameTest"))) {
             try {

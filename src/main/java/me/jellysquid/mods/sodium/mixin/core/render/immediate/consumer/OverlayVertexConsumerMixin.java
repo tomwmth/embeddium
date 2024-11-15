@@ -10,7 +10,6 @@ import net.caffeinemc.mods.sodium.api.vertex.attributes.common.TextureAttribute;
 import net.caffeinemc.mods.sodium.api.vertex.format.VertexFormatDescription;
 import net.minecraft.core.Direction;
 import net.caffeinemc.mods.sodium.api.vertex.buffer.VertexBufferWriter;
-import org.embeddedt.embeddium.api.math.JomlHelper;
 import org.joml.*;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
@@ -30,27 +29,22 @@ public class OverlayVertexConsumerMixin implements VertexBufferWriter {
 
     @Shadow
     @Final
-    private com.mojang.math.Matrix3f normalInversePose;
-
-    private Matrix3f jomlNormalInverse;
+    private Matrix3f normalInversePose;
 
     @Shadow
     @Final
-    private com.mojang.math.Matrix4f cameraInversePose;
+    private Matrix4f cameraInversePose;
 
-    private Matrix4f jomlCameraInverse;
+    @Shadow
+    @Final
+    private float textureScale;
 
     @Unique
     private boolean isFullWriter;
 
-    @Unique
-    private Quaternionf jomlQuaternion = new Quaternionf();
-
     @Inject(method = "<init>", at = @At("RETURN"))
     private void onInit(CallbackInfo ci) {
         this.isFullWriter = VertexBufferWriter.tryOf(this.delegate) != null;
-        this.jomlNormalInverse = JomlHelper.copy(this.normalInversePose);
-        this.jomlCameraInverse = JomlHelper.copy(this.cameraInversePose);
     }
 
     @Override
@@ -60,7 +54,8 @@ public class OverlayVertexConsumerMixin implements VertexBufferWriter {
 
     @Override
     public void push(MemoryStack stack, long ptr, int count, VertexFormatDescription format) {
-        transform(ptr, count, format, this.jomlNormalInverse, this.jomlCameraInverse);
+        transform(ptr, count, format,
+                this.normalInversePose, this.cameraInversePose, this.textureScale);
 
         VertexBufferWriter.of(this.delegate)
                 .push(stack, ptr, count, format);
@@ -74,10 +69,11 @@ public class OverlayVertexConsumerMixin implements VertexBufferWriter {
      * @param format The format of the vertices
      * @param inverseNormalMatrix The inverted normal matrix
      * @param inverseTextureMatrix The inverted texture matrix
+     * @param textureScale The amount which the overlay texture should be adjusted
      */
     @Unique
-    private void transform(long ptr, int count, VertexFormatDescription format,
-                                  Matrix3f inverseNormalMatrix, Matrix4f inverseTextureMatrix) {
+    private static void transform(long ptr, int count, VertexFormatDescription format,
+                                  Matrix3f inverseNormalMatrix, Matrix4f inverseTextureMatrix, float textureScale) {
         long stride = format.stride();
 
         var offsetPosition = format.getElementOffset(CommonVertexAttribute.POSITION);
@@ -107,10 +103,10 @@ public class OverlayVertexConsumerMixin implements VertexBufferWriter {
             Vector4f transformedTexture = inverseTextureMatrix.transform(position);
             transformedTexture.rotateY(3.1415927F);
             transformedTexture.rotateX(-1.5707964F);
-            transformedTexture.rotate(JomlHelper.copy(jomlQuaternion, direction.getRotation()));
+            transformedTexture.rotate(direction.getRotation());
 
-            float textureU = -transformedTexture.x();
-            float textureV = -transformedTexture.y();
+            float textureU = -transformedTexture.x() * textureScale;
+            float textureV = -transformedTexture.y() * textureScale;
 
             ColorAttribute.set(ptr + offsetColor, color);
             TextureAttribute.put(ptr + offsetTexture, textureU, textureV);

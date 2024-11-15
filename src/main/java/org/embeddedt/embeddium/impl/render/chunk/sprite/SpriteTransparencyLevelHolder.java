@@ -5,7 +5,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 public interface SpriteTransparencyLevelHolder {
     SpriteTransparencyLevel embeddium$getTransparencyLevel();
 
-    static SpriteTransparencyLevel getTransparencyLevel(TextureAtlasSprite contents) {
-        return ((SpriteTransparencyLevelHolder)contents).embeddium$getTransparencyLevel();
+    static SpriteTransparencyLevel getTransparencyLevel(TextureAtlasSprite sprite) {
+        return ((SpriteTransparencyLevelHolder) sprite.contents()).embeddium$getTransparencyLevel();
     }
 }

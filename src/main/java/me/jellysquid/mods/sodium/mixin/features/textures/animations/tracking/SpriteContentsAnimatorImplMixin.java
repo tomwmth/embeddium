@@ -2,7 +2,7 @@ package me.jellysquid.mods.sodium.mixin.features.textures.animations.tracking;
 
 import me.jellysquid.mods.sodium.client.SodiumClientMod;
 import me.jellysquid.mods.sodium.client.render.texture.SpriteContentsExtended;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.renderer.texture.SpriteContents;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
 
-@Mixin(TextureAtlasSprite.AnimatedTexture.class)
+@Mixin(SpriteContents.Ticker.class)
 public class SpriteContentsAnimatorImplMixin {
     @Shadow
     int subFrame;
@@ -23,20 +23,21 @@ public class SpriteContentsAnimatorImplMixin {
 
     @Shadow
     @Final
-    private List<TextureAtlasSprite.FrameInfo> frames;
+    SpriteContents.AnimatedTexture animationInfo;
+
     @Unique
-    private TextureAtlasSprite parent;
+    private SpriteContents parent;
 
     /**
      * @author IMS
      * @reason Replace fragile Shadow
      */
     @Inject(method = "<init>", at = @At("RETURN"))
-    public void assignParent(TextureAtlasSprite spriteContents, List<TextureAtlasSprite.FrameInfo> pFrames, int pFrameRowSize, TextureAtlasSprite.InterpolationData pInterpolationData, CallbackInfo ci) {
+    public void assignParent(SpriteContents spriteContents, SpriteContents.AnimatedTexture pAnimationInfo, SpriteContents.InterpolationData pInterpolationData, CallbackInfo ci) {
         this.parent = spriteContents;
     }
 
-    @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "tickAndUpload", at = @At("HEAD"), cancellable = true)
     private void preTick(CallbackInfo ci) {
         SpriteContentsExtended parent = (SpriteContentsExtended) this.parent;
 
@@ -44,7 +45,7 @@ public class SpriteContentsAnimatorImplMixin {
 
         if (onDemand && !parent.sodium$isActive()) {
             this.subFrame++;
-            List<TextureAtlasSprite.FrameInfo> frames = this.frames;
+            List<SpriteContents.FrameInfo> frames = this.animationInfo.frames;
             if (this.subFrame >= frames.get(this.frame).time) {
                 this.frame = (this.frame + 1) % frames.size();
                 this.subFrame = 0;
@@ -53,7 +54,7 @@ public class SpriteContentsAnimatorImplMixin {
         }
     }
 
-    @Inject(method = "tick", at = @At("TAIL"))
+    @Inject(method = "tickAndUpload", at = @At("TAIL"))
     private void postTick(CallbackInfo ci) {
         SpriteContentsExtended parent = (SpriteContentsExtended) this.parent;
         parent.sodium$setActive(false);

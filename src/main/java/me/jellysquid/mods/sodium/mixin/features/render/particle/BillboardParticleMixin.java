@@ -1,7 +1,5 @@
 package me.jellysquid.mods.sodium.mixin.features.render.particle;
 
-import com.mojang.math.Quaternion;
-import com.mojang.math.Vector3f;
 import net.caffeinemc.mods.sodium.api.vertex.format.common.ParticleVertex;
 import net.caffeinemc.mods.sodium.api.vertex.buffer.VertexBufferWriter;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -62,15 +60,15 @@ public abstract class BillboardParticleMixin extends Particle {
         float y = (float) (Mth.lerp(tickDelta, this.yo, this.y) - vec3d.y());
         float z = (float) (Mth.lerp(tickDelta, this.zo, this.z) - vec3d.z());
 
-        Quaternion quaternion;
+        Quaternionf quaternion;
 
         if (this.roll == 0.0F) {
             quaternion = camera.rotation();
         } else {
             float angle = Mth.lerp(tickDelta, this.oRoll, this.roll);
 
-            quaternion = new Quaternion(camera.rotation());
-            quaternion.mul(Vector3f.ZP.rotation(angle));
+            quaternion = new Quaternionf(camera.rotation());
+            quaternion.rotateZ(angle);
         }
 
         float size = this.getQuadSize(tickDelta);
@@ -107,15 +105,15 @@ public abstract class BillboardParticleMixin extends Particle {
     @Unique
     @SuppressWarnings("UnnecessaryLocalVariable")
     private static void writeVertex(long buffer,
-                                    Quaternion rotation,
+                                    Quaternionf rotation,
                                     float posX, float posY,
                                     float originX, float originY, float originZ,
                                     float u, float v, int color, int light, float size) {
         // Quaternion q0 = new Quaternion(rotation);
-        float q0x = rotation.i();
-        float q0y = rotation.j();
-        float q0z = rotation.k();
-        float q0w = rotation.r();
+        float q0x = rotation.x();
+        float q0y = rotation.y();
+        float q0z = rotation.z();
+        float q0w = rotation.w();
 
         // q0.hamiltonProduct(x, y, 0.0f, 0.0f)
         float q1x = (q0w * posX) - (q0z * posY);

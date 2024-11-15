@@ -12,9 +12,9 @@ public class SpriteUtil {
             return;
         }
 
-        ((SpriteContentsExtended) sprite).sodium$setActive(true);
+        ((SpriteContentsExtended) sprite.contents()).sodium$setActive(true);
 
-        if(hasAnimation(sprite)) {
+        if (hasAnimation(sprite)) {
             var context = GlobalChunkBuildContext.get();
 
             if (context != null) {
@@ -24,6 +24,6 @@ public class SpriteUtil {
     }
 
     public static boolean hasAnimation(TextureAtlasSprite sprite) {
-        return ((SpriteContentsExtended) sprite).sodium$hasAnimation();
+        return ((SpriteContentsExtended) sprite.contents()).sodium$hasAnimation();
     }
 }

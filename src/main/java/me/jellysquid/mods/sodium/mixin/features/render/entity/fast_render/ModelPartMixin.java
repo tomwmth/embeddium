@@ -1,12 +1,10 @@
 package me.jellysquid.mods.sodium.mixin.features.render.entity.fast_render;
 
-import com.mojang.math.Quaternion;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import me.jellysquid.mods.sodium.client.model.ModelCuboidAccessor;
 import me.jellysquid.mods.sodium.client.render.immediate.model.EntityRenderer;
 import me.jellysquid.mods.sodium.client.render.immediate.model.ModelCuboid;
 import me.jellysquid.mods.sodium.client.render.immediate.model.ModelPartData;
-import me.jellysquid.mods.sodium.client.render.vertex.VertexConsumerUtils;
 import net.caffeinemc.mods.sodium.api.math.MatrixHelper;
 import net.caffeinemc.mods.sodium.api.util.ColorABGR;
 import net.caffeinemc.mods.sodium.api.vertex.buffer.VertexBufferWriter;
@@ -19,7 +17,6 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -132,17 +129,8 @@ public class ModelPartMixin implements ModelPartData {
             matrixStack.translate(this.x * (1.0f / 16.0f), this.y * (1.0f / 16.0f), this.z * (1.0f / 16.0f));
         }
 
-        // TODO do rotations without allocating so many Quaternions
-        if (this.zRot != 0.0F) {
-            matrixStack.mulPose(Vector3f.ZP.rotation(this.zRot));
-        }
-
-        if (this.yRot != 0.0F) {
-            matrixStack.mulPose(Vector3f.YP.rotation(this.yRot));
-        }
-
-        if (this.xRot != 0.0F) {
-            matrixStack.mulPose(Vector3f.XP.rotation(this.xRot));
+        if (this.xRot != 0.0F || this.yRot != 0.0F || this.zRot != 0.0F) {
+            MatrixHelper.rotateZYX(matrixStack.last(), this.zRot, this.yRot, this.xRot);
         }
 
         if (this.xScale != 1.0F || this.yScale != 1.0F || this.zScale != 1.0F) {

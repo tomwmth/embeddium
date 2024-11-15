@@ -12,7 +12,6 @@ import net.minecraft.client.gui.screens.LevelLoadingScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.server.level.progress.StoringChunkProgressListener;
 import net.minecraft.world.level.chunk.ChunkStatus;
-import org.embeddedt.embeddium.api.math.JomlHelper;
 import org.joml.Matrix4f;
 import org.lwjgl.system.MemoryStack;
 import org.spongepowered.asm.mixin.*;
@@ -57,7 +56,7 @@ public class LevelLoadingScreenMixin {
 
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
-        Matrix4f matrix = JomlHelper.copy(matrices.last().pose());
+        Matrix4f matrix = matrices.last().pose();
 
         Tesselator tessellator = Tesselator.getInstance();
 

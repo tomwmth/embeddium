@@ -6,7 +6,7 @@ import me.jellysquid.mods.sodium.client.gui.options.control.ControlElement;
 import me.jellysquid.mods.sodium.client.gui.widgets.AbstractWidget;
 import me.jellysquid.mods.sodium.client.util.Dim2i;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.Widget;
+import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import org.jetbrains.annotations.Nullable;
@@ -18,7 +18,7 @@ import java.util.function.Consumer;
 public abstract class AbstractFrame extends AbstractWidget implements ContainerEventHandler {
     protected Dim2i dim;
     protected final List<AbstractWidget> children = new ArrayList<>();
-    protected final List<Widget> drawable = new ArrayList<>();
+    protected final List<Renderable> drawable = new ArrayList<>();
     protected final List<ControlElement<?>> controlElements = new ArrayList<>();
     protected boolean renderOutline;
     private GuiEventListener focused;
@@ -38,8 +38,8 @@ public abstract class AbstractFrame extends AbstractWidget implements ContainerE
             if (element instanceof ControlElement<?>) {
                 this.controlElements.add((ControlElement<?>) element);
             }
-            if (element instanceof Widget) {
-                this.drawable.add((Widget) element);
+            if (element instanceof Renderable) {
+                this.drawable.add((Renderable) element);
             }
         }
     }
@@ -49,7 +49,7 @@ public abstract class AbstractFrame extends AbstractWidget implements ContainerE
         if (this.renderOutline) {
             this.drawBorder(drawContext, this.dim.x(), this.dim.y(), this.dim.getLimitX(), this.dim.getLimitY(), 0xFFAAAAAA);
         }
-        for (Widget drawable : this.drawable) {
+        for (Renderable drawable : this.drawable) {
             drawable.render(drawContext, mouseX, mouseY, delta);
         }
     }

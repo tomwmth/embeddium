@@ -1,21 +1,18 @@
 package me.jellysquid.mods.sodium.client.render.immediate.model;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Matrix4f;
-import org.embeddedt.embeddium.api.math.Matrix3fExtended;
-import org.embeddedt.embeddium.api.math.Matrix4fExtended;
+import net.caffeinemc.mods.sodium.api.math.MatrixHelper;
 import org.embeddedt.embeddium.render.matrix_stack.CachingPoseStack;
 import net.caffeinemc.mods.sodium.api.vertex.buffer.VertexBufferWriter;
 import net.caffeinemc.mods.sodium.api.vertex.format.common.ModelVertex;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.core.Direction;
 import org.apache.commons.lang3.ArrayUtils;
+import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
-
-import java.util.List;
 
 public class EntityRenderer {
 
@@ -202,13 +199,12 @@ public class EntityRenderer {
     }
 
     public static void prepareNormals(PoseStack.Pose matrices) {
-        var normalMatrix = Matrix3fExtended.get(matrices.normal());
-        CUBE_NORMALS[FACE_NEG_Y] = normalMatrix.transformNormal(Direction.DOWN);
-        CUBE_NORMALS[FACE_POS_Y] = normalMatrix.transformNormal(Direction.UP);
-        CUBE_NORMALS[FACE_NEG_Z] = normalMatrix.transformNormal(Direction.NORTH);
-        CUBE_NORMALS[FACE_POS_Z] = normalMatrix.transformNormal(Direction.SOUTH);
-        CUBE_NORMALS[FACE_POS_X] = normalMatrix.transformNormal(Direction.WEST);
-        CUBE_NORMALS[FACE_NEG_X] = normalMatrix.transformNormal(Direction.EAST);
+        CUBE_NORMALS[FACE_NEG_Y] = MatrixHelper.transformNormal(matrices.normal(), Direction.DOWN);
+        CUBE_NORMALS[FACE_POS_Y] = MatrixHelper.transformNormal(matrices.normal(), Direction.UP);
+        CUBE_NORMALS[FACE_NEG_Z] = MatrixHelper.transformNormal(matrices.normal(), Direction.NORTH);
+        CUBE_NORMALS[FACE_POS_Z] = MatrixHelper.transformNormal(matrices.normal(), Direction.SOUTH);
+        CUBE_NORMALS[FACE_POS_X] = MatrixHelper.transformNormal(matrices.normal(), Direction.WEST);
+        CUBE_NORMALS[FACE_NEG_X] = MatrixHelper.transformNormal(matrices.normal(), Direction.EAST);
 
         // When mirroring is used, the normals for EAST and WEST are swapped.
         CUBE_NORMALS_MIRRORED[FACE_NEG_Y] = CUBE_NORMALS[FACE_NEG_Y];
@@ -220,10 +216,9 @@ public class EntityRenderer {
     }
 
     private static void buildVertexPosition(Vector3f vector, float x, float y, float z, Matrix4f matrix) {
-        var matrixExt = Matrix4fExtended.get(matrix);
-        vector.x = matrixExt.transformVecX(x, y, z);
-        vector.y = matrixExt.transformVecY(x, y, z);
-        vector.z = matrixExt.transformVecZ(x, y, z);
+        vector.x = MatrixHelper.transformPositionX(matrix, x, y, z);
+        vector.y = MatrixHelper.transformPositionY(matrix, x, y, z);
+        vector.z = MatrixHelper.transformPositionZ(matrix, x, y, z);
     }
 
     private static void buildVertexTexCoord(Vector2f[] uvs, float u1, float v1, float u2, float v2) {
